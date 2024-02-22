@@ -47,7 +47,7 @@ def get_names_dates(soup, letter):
             date_cell = cells[1]
 
             # Split the diminutive forms of names by comma
-            names = [a_tag.text.strip() for a_tag in name_cell.find_all('a')]
+            names = [replace_greek_letters(a_tag.text.strip().upper()) for a_tag in name_cell.find_all('a')]
 
             for name in names:
                 dates = []
@@ -63,6 +63,12 @@ def get_names_dates(soup, letter):
                 data.append((name, dates))
     print(f'Found {count} distinct names starting with {letter}.')
     return data
+
+def replace_greek_letters(name):
+    replacement_dict = {'Ά': 'Α', 'Έ': 'Ε', 'Ή': 'Η', 'Ί': 'Ι', 'Ό': 'Ο', 'Ύ': 'Υ', 'Ώ': 'Ω', 'Ϊ́': 'Ϊ', 'Ϋ́': 'Ϋ'}
+    for key, value in replacement_dict.items():
+        name = name.replace(key, value)
+    return name
                 
 def store_data(data, db_file):
     conn = sqlite3.connect(db_file)      
