@@ -27,7 +27,9 @@ def create_db(db_file, drop=False):
                         name TEXT UNIQUE);
 
                     CREATE TABLE IF NOT EXISTS Date(
-                        name_id INT, month INT, day INT, UNIQUE(name_id, month, day));''')
+                        name_id INT, month INT, day INT, 
+                        PRIMARY KEY (name_id, month, day),
+                        FOREIGN KEY (name_id) REFERENCES Names(id) );''')
     conn.commit()
     conn.close()
 
