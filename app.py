@@ -3,6 +3,7 @@ from tkinter import ttk
 import customtkinter as ctk
 import pandas as pd
 import sqlite3
+from tkinter import filedialog, messagebox
 
 class myTreeView(ttk.Treeview):
     def __init__(self, master, df, **kwargs):
@@ -78,14 +79,37 @@ def create_db_connection():
         print(f'Error connecting to the database: {e}')
         return None
 
+def search_name(event=None):
+    search_query = search_entry.get().strip().upper()
+    if search_query:
+        tree.delete(*tree.get_children())  # Clear the treeview
+        for row in db.itertuples():
+            if search_query in row.name:
+                tree.insert('', 'end', values=row[1:])
+    else:
+        tree.delete(*tree.get_children())
+        for row in db.itertuples():
+            tree.insert('', 'end', values=row[1:])
+    search_entry.delete(0, 'end')  # Clear the search entry
+
+
 
 if __name__ == '__main__':
     
     root = ctk.CTk()
-    
+    root.grid_rowconfigure(1, weight=1)  
+    root.grid_columnconfigure(0, weight=1)
+
     db = get_records()
     db.reset_index(inplace=True)
     
+
+
+    # Create a search entry
+    search_entry = ctk.CTkEntry(root, placeholder_text="Search name")
+    search_entry.grid(row=0, column=0, padx=10, pady=10)
+    search_entry.bind("<Return>", search_name)
+
     # Display the dataframe in a treeview
     tree = myTreeView(root, df=db, columns=list(db.columns), show='headings')
 
@@ -96,8 +120,14 @@ if __name__ == '__main__':
     for row in db.itertuples():
         tree.insert('', 'end', values=row[1:]) # row[0] is the index
 
+    tree.grid(row=1, column=0, padx=10, sticky="nsew")
+    
+    # Create a scrollbar
+    scrollbar = ctk.CTkScrollbar(root)
+    scrollbar.grid(row=1, column=0, sticky="nse")
+    scrollbar.configure(command=tree.yview)
 
-    tree.pack()
+    tree.configure(yscrollcommand=scrollbar.set)
     
     root.mainloop()
     
