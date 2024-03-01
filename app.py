@@ -15,7 +15,7 @@ class myTreeView(ttk.Treeview):
     def on_double_click(self, event):
 
         region_clicked = self.identify("region", event.x, event.y)
-        print(f'You clicked on {region_clicked}')
+        # print(f'You clicked on {region_clicked}')
         if region_clicked == "cell":
             column = self.identify_column(event.x)
             print(f'You clicked on column {column}')   
@@ -57,13 +57,33 @@ class myTreeView(ttk.Treeview):
         
         # Update the dataframe
         row_index = self.row_identifier_to_index[int(item)]
-        # row_index = int(item[1:]) - 1  # Convert item ID to row index
         column_name = self.heading(column)["text"].lower()
         # print(f'Row index: {row_index}, Column name: {column_name}, New value: {new_value}')
         # print(self.df)
         self.df.at[row_index, column_name] = new_value  # Update value in the DataFrame
         entry.destroy()
         print(self.df)
+    
+    def load_file(self, file_path):
+        try:
+            if file_path.endswith('.csv'):
+                self.df = pd.read_csv(file_path)
+                self.refresh_treeview()
+            elif file_path.endswith('.xlsx'):
+                self.df = pd.read_excel(file_path)
+                self.refresh_treeview()
+        except Exception as e:
+            print(f"Error loading file: {e}")
+
+    def refresh_treeview(self):
+        self.delete(*self.get_children())
+        self['columns'] = list(self.df.columns)
+        self['show'] = 'headings'
+        for col in self.df.columns:
+            self.heading(col, text=col.capitalize())
+            self.column(col, anchor="center")
+        for row in self.df.itertuples():
+            self.insert('', 'end', values=row[1:], iid=row[0])
 
 def get_records():
     conn = create_db_connection()
