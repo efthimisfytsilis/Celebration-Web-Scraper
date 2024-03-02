@@ -69,6 +69,9 @@ class myTreeView(ttk.Treeview):
             if file_path.endswith('.csv'):
                 self.df = pd.read_csv(file_path)
                 self.refresh_treeview()
+            elif file_path.endswith('.txt'):
+                self.df = pd.read_csv(file_path, delimiter='\t')
+                self.refresh_treeview()
             elif file_path.endswith('.xlsx'):
                 self.df = pd.read_excel(file_path)
                 self.refresh_treeview()
@@ -121,6 +124,35 @@ def search_name(event=None):
             tree.insert('', 'end', values=row[1:], iid=row[0])
     search_entry.delete(0, 'end')  # Clear the search entry
 
+def load():
+    file_path = filedialog.askopenfilename(filetypes=[("Text Files", ["*.csv", "*.txt"]), ("Excel files", "*.xlsx"), ("All Files", "*.*")])
+    if file_path:
+        display_button.configure(state="normal")
+        display_tree.load_file(file_path)
+
+def display_date():
+    if display_tree.df.empty:
+        messagebox.showinfo("Error", "No file loaded")
+    else:
+        try:
+            display_tree.df = pd.merge(display_tree.df, db, on='name', how='left')
+            display_tree.refresh_treeview()
+            display_button.configure(state="disabled")
+        except KeyError:
+            print("Error: 'name' column not found in one of the DataFrames.")
+        except Exception as e:
+            print(f"Error merging DataFrames: {e}")
+
+def export_data():
+    if not display_tree.df.empty:
+        filename = filedialog.asksaveasfilename(filetypes=[("Text files", "*.csv")], defaultextension=".csv")
+        if filename:
+            try:
+                tree.df.to_csv(filename, index=False)
+            except Exception as e:
+                print(f"Error exporting data: {e}")
+    else:
+        print("No data to export")
 
 if __name__ == '__main__':
     
@@ -139,8 +171,12 @@ if __name__ == '__main__':
   
     tab_view.tab(tab_1).rowconfigure(1, weight=1)
     tab_view.tab(tab_1).columnconfigure(0, weight=1)
-    
 
+    tab_view.tab(tab_2).rowconfigure(1, weight=1)
+    for i in range(3):
+        tab_view.tab(tab_2).columnconfigure(i, weight=1)
+    
+    # Load the datset from database
     db = get_records()
     db.reset_index(inplace=True)
     
@@ -169,5 +205,21 @@ if __name__ == '__main__':
     tree.configure(yscrollcommand=scrollbar.set)
 
     # Tab2
+    ## Buttons
+    load_button = ctk.CTkButton(tab_view.tab(tab_2), text="Load File", command=load)
+    load_button.grid(row=0, column=0, padx=10, pady=10)
+
+    display_button = ctk.CTkButton(tab_view.tab(tab_2), text="Display", command=display_date)
+    display_button.grid(row=0, column=1, padx=10, pady=10)
+
+    export_button = ctk.CTkButton(tab_view.tab(tab_2), text="Export", command=export_data)
+    export_button.grid(row=0, column=2, padx=10, pady=10)
+
+    ## Display the dataframe in a treeview
+    placeholder_text = "No data loaded"
+    display_tree = myTreeView(tab_view.tab(tab_2), df=pd.DataFrame(), columns=[placeholder_text], show='headings')
+    display_tree.heading(placeholder_text, text=placeholder_text)
+    display_tree.grid(row=1, column=0, columnspan=3, padx=10, sticky="nsew")
+    
     root.mainloop()
     
