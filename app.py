@@ -122,25 +122,36 @@ def search_name(event=None):
     search_entry.delete(0, 'end')  # Clear the search entry
 
 
-
 if __name__ == '__main__':
     
     root = ctk.CTk()
-    root.grid_rowconfigure(1, weight=1)  
+    root.title('Etiquette Tool')
+    root.grid_rowconfigure(0, weight=1)  
     root.grid_columnconfigure(0, weight=1)
+
+    # Tab view
+    tab_view = ctk.CTkTabview(root, anchor='w')
+    tab_1 = 'Search'
+    tab_2 = 'Load File'
+    tab_view.add(tab_1)
+    tab_view.add(tab_2)
+    tab_view.grid(row=0, column=0, sticky="nsew")
+  
+    tab_view.tab(tab_1).rowconfigure(1, weight=1)
+    tab_view.tab(tab_1).columnconfigure(0, weight=1)
+    
 
     db = get_records()
     db.reset_index(inplace=True)
     
-
-
-    # Create a search entry
-    search_entry = ctk.CTkEntry(root, placeholder_text="Search name")
+    # Tab1
+    ## Create a search entry
+    search_entry = ctk.CTkEntry(tab_view.tab(tab_1), placeholder_text="Search name")
     search_entry.grid(row=0, column=0, padx=10, pady=10)
     search_entry.bind("<Return>", search_name)
 
-    # Display the dataframe in a treeview
-    tree = myTreeView(root, df=db, columns=list(db.columns), show='headings')
+    ## Display the dataframe in a treeview
+    tree = myTreeView(tab_view.tab(tab_1), df=db, columns=list(db.columns), show='headings')
 
     for col in db.columns:
         tree.heading(col, text=col.capitalize())
@@ -151,12 +162,12 @@ if __name__ == '__main__':
 
     tree.grid(row=1, column=0, padx=10, sticky="nsew")
     
-    # Create a scrollbar
-    scrollbar = ctk.CTkScrollbar(root)
+    ## Create a scrollbar
+    scrollbar = ctk.CTkScrollbar(tab_view.tab(tab_1))
     scrollbar.grid(row=1, column=0, sticky="nse")
     scrollbar.configure(command=tree.yview)
-
     tree.configure(yscrollcommand=scrollbar.set)
-    
+
+    # Tab2
     root.mainloop()
     
