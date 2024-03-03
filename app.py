@@ -148,11 +148,35 @@ def export_data():
         filename = filedialog.asksaveasfilename(filetypes=[("Text files", "*.csv")], defaultextension=".csv")
         if filename:
             try:
-                tree.df.to_csv(filename, index=False)
+                display_tree.df.to_csv(filename, index=False)
             except Exception as e:
                 print(f"Error exporting data: {e}")
     else:
         print("No data to export")
+
+def insert_row():
+    if not display_tree.df.empty:
+        columns = [display_tree.df.columns]  # Example data
+        for col in columns:
+            data = dict.fromkeys(col, 'None')
+        # print(data)
+        
+        new_row=pd.DataFrame([data])
+        display_tree.df = pd.concat([display_tree.df, new_row], ignore_index=True)
+        # print(display_tree.df)
+        display_tree.refresh_treeview()
+
+def delete_row():
+    if not display_tree.df.empty:
+        row_identifier_to_index = display_tree.df.index.tolist()
+        selected_item = display_tree.selection()[0]
+        # print(f'selected item {selected_item}')
+        display_tree.delete(selected_item)
+        
+        # Update the dataframe
+        display_tree.df = display_tree.df.drop(row_identifier_to_index[int(selected_item)]).reset_index(drop=True)
+        # print(display_tree.df)
+        display_tree.refresh_treeview()
 
 if __name__ == '__main__':
     
@@ -173,7 +197,7 @@ if __name__ == '__main__':
     tab_view.tab(tab_1).columnconfigure(0, weight=1)
 
     tab_view.tab(tab_2).rowconfigure(1, weight=1)
-    for i in range(3):
+    for i in range(5):
         tab_view.tab(tab_2).columnconfigure(i, weight=1)
     
     # Load the datset from database
@@ -205,21 +229,39 @@ if __name__ == '__main__':
     tree.configure(yscrollcommand=scrollbar.set)
 
     # Tab2
+    ## Frames
+    file_frame = ctk.CTkFrame(tab_view.tab(tab_2), border_width=2, border_color="white")
+    file_frame.grid(row=0, column=0, columnspan=3, padx=10, pady=10, sticky="n")
+    row_frame = ctk.CTkFrame(tab_view.tab(tab_2), border_width=2, border_color="white")
+    row_frame.grid(row=0, column=3, columnspan=2, padx=10, pady=10, sticky="n")
+    
     ## Buttons
-    load_button = ctk.CTkButton(tab_view.tab(tab_2), text="Load File", command=load)
+    load_button = ctk.CTkButton(file_frame, text="Load", command=load)
     load_button.grid(row=0, column=0, padx=10, pady=10)
 
-    display_button = ctk.CTkButton(tab_view.tab(tab_2), text="Display", command=display_date)
+    display_button = ctk.CTkButton(file_frame, text="Display", command=display_date)
     display_button.grid(row=0, column=1, padx=10, pady=10)
 
-    export_button = ctk.CTkButton(tab_view.tab(tab_2), text="Export", command=export_data)
+    export_button = ctk.CTkButton(file_frame, text="Export", command=export_data)
     export_button.grid(row=0, column=2, padx=10, pady=10)
+
+    insert_button = ctk.CTkButton(row_frame, text="Insert row", command=insert_row)
+    insert_button.grid(row=0, column=3, padx=10, pady=10)
+
+    delete_button = ctk.CTkButton(row_frame, text="Delete row", command=delete_row)
+    delete_button.grid(row=0, column=4, padx=10, pady=10)
 
     ## Display the dataframe in a treeview
     placeholder_text = "No data loaded"
     display_tree = myTreeView(tab_view.tab(tab_2), df=pd.DataFrame(), columns=[placeholder_text], show='headings')
     display_tree.heading(placeholder_text, text=placeholder_text)
-    display_tree.grid(row=1, column=0, columnspan=3, padx=10, sticky="nsew")
+    display_tree.grid(row=1, column=0, columnspan=5, padx=10, sticky="nsew")
+
+    ## Create a scrollbar
+    scrollbar = ctk.CTkScrollbar(tab_view.tab(tab_2))
+    scrollbar.grid(row=1, column=4, sticky="nse")
+    scrollbar.configure(command=display_tree.yview)
+    display_tree.configure(yscrollcommand=scrollbar.set)
     
     root.mainloop()
     
