@@ -19,9 +19,12 @@ Upon running the application, the GUI will open, providing two tabs for differen
     - Allows users to search for a name and displays its corresponding celebration date.
 
 - **Load File Tab**:
-    - Enables users to upload tabular data with a 'name' column as a requirement and retrieves celebration dates for the included names.
+    - Enables users to upload tabular data with a `name` column as a requirement and retrieves celebration dates for the included names.
     - Users can edit existing entries, add new names and dates, or delete rows as needed to customize the data.
     - Finally, once the necessary modifications have been made, users can export the file with the updated data.
+
+Here's a brief visual demonstration of the application's usage:
+![demo](https://github.com/efthimisfytsilis/Etiquette-Web-Scraper/assets/150830434/8f701dd0-4e05-439e-914f-e2bf18f8fab4)
 
 ## Setting Up
 ```
