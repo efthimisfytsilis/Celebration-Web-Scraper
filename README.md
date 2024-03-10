@@ -5,6 +5,9 @@ With web scraping the entire internet becomes your database. :spider:
 This project entails an application with a GUI designed to retrieve information from a web-scraped database. The scraper extracts greek names and their associated celebration dates from [eortologio.net](https://www.eortologio.net/) and stores them in a SQLite database. The application, built using Tkinter, provides users with intuitive tabs for accessing and interacting with the collected data.
 
 ## Overview
+This project stems from a real-world need I encountered during my military service. Each year, personnel evaluations are conducted, resulting in demobilizations, promotions, and reassignments. To maintain updated records and uphold proper etiquette, it's crucial to track individual birthdays or celebratory occasions. This information ensures timely greetings and well-wishes are delivered, fostering a positive and supportive military community.
+
+## Project Structure
 Below is an outline of the main files included in the repository:
 - [`celebration.db`](celebration.db): Stores the collected names and their associated celebration dates, serving as the repository for the scraped data. 
 - [`scraper.py`](scraper.py): Extracts data from a single page of the designated source and populates the `celebration.db` database with the collected information.
