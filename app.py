@@ -62,7 +62,7 @@ class myTreeView(ttk.Treeview):
         # print(self.df)
         self.df.at[row_index, column_name] = new_value  # Update value in the DataFrame
         entry.destroy()
-        print(self.df)
+        # print(self.df)
     
     def load_file(self, file_path):
         try:
@@ -116,7 +116,6 @@ def search_name(event=None):
         tree.delete(*tree.get_children())  # Clear the treeview
         for row in db.itertuples():
             if search_query in row.name:
-                print(row)
                 tree.insert('', 'end', values=row[1:], iid=row[0])
     else:
         tree.delete(*tree.get_children())
