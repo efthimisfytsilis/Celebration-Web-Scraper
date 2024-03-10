@@ -11,3 +11,22 @@ Below is an outline of the main files included in the repository:
 - [`main.py`](main.py): Orchestrates the scraping process by executing the `scraper.py` logic across multiple pages of the target website, ensuring comprehensive data retrieval and storage.
 - [`app.py`](app.py): The GUI implementation using Tkinter.
 
+## Usage
+Upon running the application, the GUI will open, providing two tabs for different functionalities:
+
+- **Search Tab**: 
+    - Loads the entire database, allowing users to view and edit (locally) the names and their corresponding celebration dates.
+    - Allows users to search for a name and displays its corresponding celebration date.
+
+- **Load File Tab**:
+    - Enables users to upload tabular data with a 'name' column as a requirement and retrieves celebration dates for the included names.
+    - Users can edit existing entries, add new names and dates, or delete rows as needed to customize the data.
+    - Finally, once the necessary modifications have been made, users can export the file with the updated data.
+
+## Setting Up
+```
+git clone https://github.com/efthimisfytsilis/Etiquette-Web-Scraper.git
+```
+```
+pip install beautifulsoup4 customtkinter requests
+```
